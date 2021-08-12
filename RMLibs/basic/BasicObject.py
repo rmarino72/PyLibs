@@ -14,6 +14,27 @@ class BasicObject:
     def logger(self, logger: RMLogger):
         self.__logger = logger
 
+    @staticmethod
+    def json_to_dict(json_str: str) -> dict:
+        """
+        Converts a json string to a dict
+        :param json_str: the json string
+        :return: the dict
+        """
+        return json.loads(json_str)
+
+    @staticmethod
+    def object_list_to_dict_list(object_list: list) -> list:
+        res: list = []
+        for obj in object_list:  # type: BasicObject
+            res.append(obj.to_dict())
+        return res
+
+    @staticmethod
+    def object_list_to_json(object_list: list) -> str:
+        dict_list: list = BasicObject.object_list_to_dict_list(object_list)
+        return json.dumps(dict_list)
+
     def __compose_debug_msg(self, msg: str) -> str:
         return type(self).__name__ + msg
 
@@ -38,10 +59,22 @@ class BasicObject:
             obj: dict = self.__dict__.copy()
             if "_BasicObject__logger" in obj.keys():
                 del obj["_BasicObject__logger"]
-            res: str = json.dumps(obj, sort_keys=True)
+            res: str = json.dumps(obj, sort_keys=True, indent=4).replace(
+                '_' + type(self).__name__ + '__', '')
             return res
         except Exception as ex:
             self.error('.to_json(self) - an error has occurred: ' + str(ex))
+            return None
+
+    def to_dict(self) -> dict or None:
+        """
+        Converts the Business Object to a Dict
+        :return: the dict
+        """
+        try:
+            return self.json_to_dict(self.to_json())
+        except Exception as ex:
+            self.error('.to_dict(self) - an error has occurred: ' + str(ex))
             return None
 
     def from_json(self, json_str: str):
