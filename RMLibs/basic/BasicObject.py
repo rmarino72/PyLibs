@@ -7,6 +7,10 @@ class BasicObject:
     __logger: RMLogger = None
 
     @property
+    def class_name(self) -> str:
+        return type(self).__name__
+
+    @property
     def logger(self) -> RMLogger:
         return self.__logger
 

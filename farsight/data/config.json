@@ -1,0 +1,6 @@
+{
+  "db_file": "./farsight/data/fs.db",
+  "log_path": "./farsight/log/",
+  "debug_level": "DEBUG",
+  "verbose": "True"
+}
