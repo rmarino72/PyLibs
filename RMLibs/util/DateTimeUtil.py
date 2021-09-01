@@ -7,6 +7,20 @@ class DateTimeUtil:
     FORMAT_TIMESTAMP = "%Y%m%d%H%M%S"
 
     @staticmethod
+    def date_hook(json_dict):
+        for (key, value) in json_dict.items():
+            try:
+                json_dict[key] = datetime.strptime(value, DateTimeUtil.FORMAT_YMDHMS)
+            except:
+                pass
+        return json_dict
+
+    @staticmethod
+    def default(o):
+        if isinstance(o, (datetime)):
+            return DateTimeUtil.datetime_to_string(o)
+
+    @staticmethod
     def get_now() -> datetime:
         return datetime.now()
 

@@ -1,5 +1,8 @@
 import json
+from datetime import datetime
+
 from RMLibs.logging.RMLogger import RMLogger
+from RMLibs.util.DateTimeUtil import DateTimeUtil
 
 
 class BasicObject:
@@ -25,7 +28,8 @@ class BasicObject:
         :param json_str: the json string
         :return: the dict
         """
-        return json.loads(json_str)
+        res: dict = json.loads(json_str, object_hook=DateTimeUtil.date_hook)
+        return res
 
     @staticmethod
     def object_list_to_dict_list(object_list: list) -> list:
@@ -43,16 +47,28 @@ class BasicObject:
         return type(self).__name__ + msg
 
     def debug(self, msg: str):
-        self.__logger.debug(self.__compose_debug_msg(msg))
+        if self.__logger is not None:
+            self.__logger.debug(self.__compose_debug_msg(msg))
+        else:
+            print(self.__compose_debug_msg(msg))
 
     def debug_verbose(self, msg: str):
-        self.logger.debug(self.__compose_debug_msg(msg), True)
+        if self.__logger is not None:
+            self.logger.debug(self.__compose_debug_msg(msg), True)
+        else:
+            print(self.__compose_debug_msg(msg))
 
     def info(self, msg: str):
-        self.__logger.info(self.__compose_debug_msg(msg))
+        if self.__logger is not None:
+            self.__logger.info(self.__compose_debug_msg(msg))
+        else:
+            print(self.__compose_debug_msg(msg))
 
     def error(self, msg: str):
-        self.__logger.error(self.__compose_debug_msg(msg))
+        if self.__logger is not None:
+            self.__logger.error(self.__compose_debug_msg(msg))
+        else:
+            print(self.__compose_debug_msg(msg))
 
     def to_json(self) -> str or None:
         """
@@ -63,8 +79,8 @@ class BasicObject:
             obj: dict = self.__dict__.copy()
             if "_BasicObject__logger" in obj.keys():
                 del obj["_BasicObject__logger"]
-            res: str = json.dumps(obj, sort_keys=True, indent=4).replace(
-                '_' + type(self).__name__ + '__', '')
+            res: str = json.dumps(obj, sort_keys=True, indent=4, default=DateTimeUtil.default).replace(
+                '_' + self.class_name + '__', '')
             return res
         except Exception as ex:
             self.error('.to_json(self) - an error has occurred: ' + str(ex))

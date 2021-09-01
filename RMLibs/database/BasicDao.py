@@ -13,7 +13,13 @@ class BasicDao(BasicObject):
         return self.get_table(metadata).insert()
 
     def get_update(self, metadata: MetaData):
-        return self.get_table(metadata).update()
+        values: dict = self.to_dict()
+        return self.get_table(metadata).update().values(values)
 
     def get_delete (self, metadata: MetaData):
         return self.get_table(metadata).delete()
+
+    def from_rs(self, rs):
+        values: dict = self.to_dict()
+        for key in values.keys():
+            exec ("self." + key + " = rs." + key)

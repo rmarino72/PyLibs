@@ -11,6 +11,7 @@ class Sample(BasicDao):
     __longitude: float
     __timestamp: datetime or None
     __cpu_temperature: float
+    __ambient_humidity: float
     __ch0_wall_humidity: float
     __ch1_wall_humidity: float
     __ch2_wall_humidity: float
@@ -57,6 +58,14 @@ class Sample(BasicDao):
         self.__cpu_temperature = cpu_temperature
 
     @property
+    def ambient_humidity(self) -> float:
+        return self.__ambient_humidity
+
+    @ambient_humidity.setter
+    def ambient_humidity(self, ambient_humidity: float):
+        self.__ambient_humidity = ambient_humidity
+
+    @property
     def ch0_wall_humidity(self) -> float:
         return self.__ch0_wall_humidity
 
@@ -94,6 +103,7 @@ class Sample(BasicDao):
         self.__longitude = 0.0
         self.__timestamp = None
         self.__cpu_temperature = 0.0
+        self.__ambient_humidity = 0.0
         self.__ch0_wall_humidity = 0.0
         self.__ch1_wall_humidity = 0.0
         self.__ch2_wall_humidity = 0.0
@@ -106,6 +116,7 @@ class Sample(BasicDao):
                      Column('longitude', Float),
                      Column('timestamp', DateTime),
                      Column('cpu_temperature', Float),
+                     Column('ambient_humidity', Float),
                      Column('ch0_wall_humidity', Float),
                      Column('ch1_wall_humidity', Float),
                      Column('ch2_wall_humidity', Float),
@@ -114,30 +125,6 @@ class Sample(BasicDao):
 
     def get_insert(self, metadata: MetaData):
         table: Table = self.get_table(metadata)
-        return table.insert().values(
-            latitude=self.latitude,
-            longitude=self.longitude,
-            timestamp=self.timestamp,
-            cpu_temperature=self.cpu_temperature,
-            ch0_wall_humidity=self.ch0_wall_humidity,
-            ch1_wall_humidity=self.ch1_wall_humidity,
-            ch2_wall_humidity=self.ch2_wall_humidity,
-            sent=self.sent
-            )
-
-    def get_update(self, metadata: MetaData):
-        table: Table = self.get_table(metadata)
-        return table.update().where(table.c.id == self.id).values(
-            latitude=self.latitude,
-            longitude=self.longitude,
-            timestamp=self.timestamp,
-            cpu_temperature=self.cpu_temperature,
-            ch0_wall_humidity=self.ch0_wall_humidity,
-            ch1_wall_humidity=self.ch1_wall_humidity,
-            ch2_wall_humidity=self.ch2_wall_humidity,
-            sent=self.sent
-        )
-
-    def get_delete_old_samples(self, time_stamp: datetime, metadata: MetaData):
-        table: Table = self.get_table(metadata)
-        return table.delete().where(table.c.timestamp <= time_stamp)
+        values: dict = self.to_dict()
+        del values['id']
+        return table.insert().values(values)

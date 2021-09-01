@@ -2,5 +2,11 @@
   "db_file": "./farsight/data/fs.db",
   "log_path": "./farsight/log/",
   "debug_level": "DEBUG",
-  "verbose": "True"
+  "verbose": "True",
+  "producer_timeout": 10,
+  "obsolete_days": 30,
+  "mac_address": "00:01:02:03:04:05",
+  "uid": "FS00AV00N0001",
+  "server_ip": "127.0.0.1",
+  "server_port": 80
 }
